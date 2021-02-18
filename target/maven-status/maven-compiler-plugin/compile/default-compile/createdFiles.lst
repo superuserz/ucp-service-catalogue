@@ -1,0 +1,10 @@
+com\nagp\ucp\service\catalog\domain\QuotedService.class
+com\nagp\ucp\service\catalog\domain\Service.class
+com\nagp\ucp\service\catalog\service\CatalogServiceImpl.class
+com\nagp\ucp\service\catalog\domain\Rating.class
+com\nagp\ucp\service\catalog\controller\CatalogController.class
+com\nagp\ucp\service\catalog\domain\Pricing.class
+com\nagp\ucp\service\catalog\client\RatingClient.class
+com\nagp\ucp\service\catalog\service\CatalogService.class
+com\nagp\ucp\service\catalog\UcpServiceCatalogueApplication.class
+com\nagp\ucp\service\catalog\repository\CatalogRepository.class
