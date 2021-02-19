@@ -7,4 +7,5 @@ com\nagp\ucp\service\catalog\domain\Pricing.class
 com\nagp\ucp\service\catalog\client\RatingClient.class
 com\nagp\ucp\service\catalog\service\CatalogService.class
 com\nagp\ucp\service\catalog\UcpServiceCatalogueApplication.class
+com\nagp\ucp\service\catalog\config\MessageConfig.class
 com\nagp\ucp\service\catalog\repository\CatalogRepository.class

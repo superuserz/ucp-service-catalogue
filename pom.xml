@@ -63,10 +63,25 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>com.nagp.ucp.common</groupId>
+			<artifactId>ucp-service-common</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-amqp</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.amqp</groupId>
+			<artifactId>spring-rabbit-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
     		<groupId>com.h2database</groupId>
     		<artifactId>h2</artifactId>
   			 <scope>runtime</scope>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>

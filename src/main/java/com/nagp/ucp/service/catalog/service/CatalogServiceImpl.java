@@ -26,92 +26,92 @@ import com.nagp.ucp.service.catalog.repository.CatalogRepository;
 @org.springframework.stereotype.Service
 public class CatalogServiceImpl implements CatalogService {
 
-    @Autowired
-    private RatingClient ratingClient;
+	@Autowired
+	private RatingClient ratingClient;
 
-    @Autowired
-    private CatalogRepository catalogRepository;
+	@Autowired
+	private CatalogRepository catalogRepository;
 
-    @Value("${server.port}")
-    private int port;
+	@Value("${server.port}")
+	private int port;
 
-    @Autowired
-    LoadBalancerClient loadBalancerClient;
+	@Autowired
+	LoadBalancerClient loadBalancerClient;
 
-    @Resource
-    private RestTemplate restTemplate;
+	@Resource
+	private RestTemplate restTemplate;
 
-    @Bean
-    @LoadBalanced
-    public RestTemplate restTemplate() {
-        return new RestTemplate();
-    }
+	@Bean
+	@LoadBalanced
+	public RestTemplate restTemplate() {
+		return new RestTemplate();
+	}
 
-    @Override
-    public List<Service> fetchCatalog() {
-        List<Service> catalog = new ArrayList<>();
-        catalogRepository.findAll().forEach(service -> catalog.add(service));
-        return catalog;
-    }
+	@Override
+	public List<Service> fetchCatalog() {
+		List<Service> catalog = new ArrayList<>();
+		catalogRepository.findAll().forEach(service -> catalog.add(service));
+		return catalog;
+	}
 
-    @Override
-    public Service fetchCatalogById(int id) {
-        return getServiceFromDB(id);
+	@Override
+	public Service fetchCatalogById(int id) {
+		return getServiceFromDB(id);
 
-    }
+	}
 
-    @Override
-    public List<Service> fetchCatalogByPincode(int pincode) {
-        return catalogRepository.findByPincode(pincode);
-    }
+	@Override
+	public List<Service> fetchCatalogByPincode(int pincode) {
+		return catalogRepository.findByPincode(pincode);
+	}
 
-    @Override
-    public QuotedService fetchServicePricing(int id) {
-        QuotedService quote = new QuotedService();
-        Service service = getServiceFromDB(id);
-        quote.setId(service.getId());
-        quote.setName(service.getName());
-        quote.setPincode(service.getPincode());
-        quote.setAvailable(service.isAvailable());
-        quote.setDescription(service.getDescription());
+	@Override
+	public QuotedService fetchServicePricing(int id) {
+		QuotedService quote = new QuotedService();
+		Service service = getServiceFromDB(id);
+		quote.setId(service.getId());
+		quote.setName(service.getName());
+		quote.setPincode(service.getPincode());
+		quote.setAvailable(service.isAvailable());
+		quote.setDescription(service.getDescription());
 
-        // Fetch Pricing from Pricing Service.
+		// Fetch Pricing from Pricing Service.
 
-        String baseUrl = loadBalancerClient.choose("ucppricing").getUri().toString() + "/pricing/fetch/" + service
-            .getId();
-        restTemplate = new RestTemplate();
-        ResponseEntity<Pricing> response = null;
+		String baseUrl = loadBalancerClient.choose("ucppricing").getUri().toString() + "/pricing/fetch/"
+				+ service.getId();
+		restTemplate = new RestTemplate();
+		ResponseEntity<Pricing> response = null;
 
-        try {
-            UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(baseUrl);
-            response = restTemplate.exchange(builder.buildAndExpand().toUri(), HttpMethod.GET, null, Pricing.class);
+		try {
+			UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(baseUrl);
+			response = restTemplate.exchange(builder.buildAndExpand().toUri(), HttpMethod.GET, null, Pricing.class);
 
-            if (null != response.getBody()) {
-                Pricing pricing = response.getBody();
-                quote.setPrice(pricing.getPrice());
-                quote.setDiscount(pricing.getDiscount());
-                quote.setQuoteOnInspection(pricing.isOnInspection());
-            }
-        } catch (Exception ex) {
-            // handle-exception
-        }
-        return quote;
-    }
+			if (null != response.getBody()) {
+				Pricing pricing = response.getBody();
+				quote.setPrice(pricing.getPrice());
+				quote.setDiscount(pricing.getDiscount());
+				quote.setQuoteOnInspection(pricing.isOnInspection());
+			}
+		} catch (Exception ex) {
+			// handle-exception
+		}
+		return quote;
+	}
 
-    @Override
-    public List<Rating> fetchServiceRating(int id) {
-        return ratingClient.getRatings(id);
-    }
+	@Override
+	public List<Rating> fetchServiceRating(int id) {
+		return ratingClient.getRatings(id);
+	}
 
-    private Service getServiceFromDB(int id) {
-        Optional<Service> serviceOptional = catalogRepository.findById(id);
-        Service service = null;
-        if (serviceOptional.isPresent()) {
-            service = serviceOptional.get();
-        } else {
-            // handle exception
-        }
-        return service;
-    }
+	private Service getServiceFromDB(int id) {
+		Optional<Service> serviceOptional = catalogRepository.findById(id);
+		Service service = null;
+		if (serviceOptional.isPresent()) {
+			service = serviceOptional.get();
+		} else {
+			// handle exception
+		}
+		return service;
+	}
 
 }

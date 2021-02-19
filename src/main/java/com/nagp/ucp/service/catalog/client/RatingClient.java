@@ -12,7 +12,7 @@ import com.nagp.ucp.service.catalog.domain.Rating;
 @FeignClient("${NGM_PNR_SERVICE_URL:http://ucprating}")
 public interface RatingClient {
 
-    @RequestMapping(method = RequestMethod.GET, value = "/rating/{serviceId}")
-    List<Rating> getRatings(@PathVariable int serviceId);
+	@RequestMapping(method = RequestMethod.GET, value = "/rating/{serviceId}")
+	public List<Rating> getRatings(@PathVariable int serviceId);
 
 }

@@ -1,6 +1,7 @@
 D:\nagp-assignment\ucp-service-catalogue\src\main\java\com\nagp\ucp\service\catalog\client\RatingClient.java
 D:\nagp-assignment\ucp-service-catalogue\src\main\java\com\nagp\ucp\service\catalog\domain\Service.java
 D:\nagp-assignment\ucp-service-catalogue\src\main\java\com\nagp\ucp\service\catalog\domain\Rating.java
+D:\nagp-assignment\ucp-service-catalogue\src\main\java\com\nagp\ucp\service\catalog\config\MessageConfig.java
 D:\nagp-assignment\ucp-service-catalogue\src\main\java\com\nagp\ucp\service\catalog\controller\CatalogController.java
 D:\nagp-assignment\ucp-service-catalogue\src\main\java\com\nagp\ucp\service\catalog\domain\QuotedService.java
 D:\nagp-assignment\ucp-service-catalogue\src\main\java\com\nagp\ucp\service\catalog\repository\CatalogRepository.java

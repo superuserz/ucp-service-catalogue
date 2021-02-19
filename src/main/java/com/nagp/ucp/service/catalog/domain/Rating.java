@@ -17,20 +17,20 @@ import lombok.ToString;
 @ToString
 public class Rating {
 
-    private int id;
+	private int id;
 
-    private int serviceId;
+	private int serviceId;
 
-    private String name;
+	private String name;
 
-    private double totalRating;
+	private double totalRating;
 
-    private String comment;
+	private String comment;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Timestamp createdOn;
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	private Timestamp createdOn;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Timestamp modifiedOn;
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	private Timestamp modifiedOn;
 
 }
