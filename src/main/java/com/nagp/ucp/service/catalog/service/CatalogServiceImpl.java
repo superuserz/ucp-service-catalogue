@@ -6,6 +6,8 @@ import java.util.Optional;
 
 import javax.annotation.Resource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
@@ -16,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.nagp.ucp.common.exception.UCPException;
 import com.nagp.ucp.service.catalog.client.RatingClient;
 import com.nagp.ucp.service.catalog.domain.Pricing;
 import com.nagp.ucp.service.catalog.domain.QuotedService;
@@ -25,6 +28,8 @@ import com.nagp.ucp.service.catalog.repository.CatalogRepository;
 
 @org.springframework.stereotype.Service
 public class CatalogServiceImpl implements CatalogService {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(CatalogServiceImpl.class);
 
 	@Autowired
 	private RatingClient ratingClient;
@@ -49,24 +54,33 @@ public class CatalogServiceImpl implements CatalogService {
 
 	@Override
 	public List<Service> fetchCatalog() {
+
+		LOGGER.info("Fetching Catalog List");
 		List<Service> catalog = new ArrayList<>();
 		catalogRepository.findAll().forEach(service -> catalog.add(service));
+		if (catalog.isEmpty()) {
+			throw new UCPException("ucp.service.catalog.001", "Catalog is Empty");
+		}
 		return catalog;
 	}
 
 	@Override
-	public Service fetchCatalogById(int id) {
+	public Service fetchCatalogById(int id) throws UCPException {
 		return getServiceFromDB(id);
 
 	}
 
 	@Override
-	public List<Service> fetchCatalogByPincode(int pincode) {
-		return catalogRepository.findByPincode(pincode);
+	public List<Service> fetchCatalogByPincode(int pincode) throws UCPException {
+		List<Service> service = catalogRepository.findByPincode(pincode);
+		if (null == service || service.isEmpty()) {
+			throw new UCPException("ucp.service.catalog.002", "No Service returned for Pincode : " + pincode);
+		}
+		return service;
 	}
 
 	@Override
-	public QuotedService fetchServicePricing(int id) {
+	public QuotedService fetchServicePricing(int id) throws UCPException {
 		QuotedService quote = new QuotedService();
 		Service service = getServiceFromDB(id);
 		quote.setId(service.getId());
@@ -91,16 +105,24 @@ public class CatalogServiceImpl implements CatalogService {
 				quote.setPrice(pricing.getPrice());
 				quote.setDiscount(pricing.getDiscount());
 				quote.setQuoteOnInspection(pricing.isOnInspection());
+			} else {
+				throw new UCPException("ucp.service.catalog.003", "Pricing for service ID : " + service.getId()
+						+ " Not Available in system. Try Again After adding the Price in DB");
 			}
 		} catch (Exception ex) {
-			// handle-exception
+			throw new UCPException("ucp.service.catalog.004",
+					"Unable to fetch Pricing for service ID : " + service.getId());
 		}
 		return quote;
 	}
 
 	@Override
-	public List<Rating> fetchServiceRating(int id) {
-		return ratingClient.getRatings(id);
+	public List<Rating> fetchServiceRating(int id) throws UCPException {
+		List<Rating> ratings = ratingClient.getRatings(id);
+		if (null == ratings || ratings.isEmpty()) {
+			throw new UCPException("ucp.service.catalog.006", "No Ratings Available for the Service Id : " + id);
+		}
+		return ratings;
 	}
 
 	private Service getServiceFromDB(int id) {
@@ -109,7 +131,7 @@ public class CatalogServiceImpl implements CatalogService {
 		if (serviceOptional.isPresent()) {
 			service = serviceOptional.get();
 		} else {
-			// handle exception
+			throw new UCPException("ucp.service.catalog.002", "Service ID : " + id + " Not found");
 		}
 		return service;
 	}
