@@ -13,12 +13,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.cloud.client.loadbalancer.LoadBalancerClient;
 import org.springframework.context.annotation.Bean;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import com.nagp.ucp.common.exception.UCPException;
+import com.nagp.ucp.service.catalog.client.PricingClient;
 import com.nagp.ucp.service.catalog.client.RatingClient;
 import com.nagp.ucp.service.catalog.domain.Pricing;
 import com.nagp.ucp.service.catalog.domain.QuotedService;
@@ -33,6 +31,9 @@ public class CatalogServiceImpl implements CatalogService {
 
 	@Autowired
 	private RatingClient ratingClient;
+
+	@Autowired
+	private PricingClient pricingClient;
 
 	@Autowired
 	private CatalogRepository catalogRepository;
@@ -90,29 +91,16 @@ public class CatalogServiceImpl implements CatalogService {
 		quote.setDescription(service.getDescription());
 
 		// Fetch Pricing from Pricing Service.
-
-		String baseUrl = loadBalancerClient.choose("ucppricing").getUri().toString() + "/pricing/fetch/"
-				+ service.getId();
-		restTemplate = new RestTemplate();
-		ResponseEntity<Pricing> response = null;
-
-		try {
-			UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(baseUrl);
-			response = restTemplate.exchange(builder.buildAndExpand().toUri(), HttpMethod.GET, null, Pricing.class);
-
-			if (null != response.getBody()) {
-				Pricing pricing = response.getBody();
-				quote.setPrice(pricing.getPrice());
-				quote.setDiscount(pricing.getDiscount());
-				quote.setQuoteOnInspection(pricing.isOnInspection());
-			} else {
-				throw new UCPException("ucp.service.catalog.003", "Pricing for service ID : " + service.getId()
-						+ " Not Available in system. Try Again After adding the Price in DB");
-			}
-		} catch (Exception ex) {
-			throw new UCPException("ucp.service.catalog.004",
-					"Unable to fetch Pricing for service ID : " + service.getId());
+		Pricing pricing = pricingClient.getPricing(id);
+		if (null != pricing) {
+			quote.setPrice(pricing.getPrice());
+			quote.setDiscount(pricing.getDiscount());
+			quote.setQuoteOnInspection(pricing.isOnInspection());
+		} else {
+			throw new UCPException("ucp.service.catalog.003", "Pricing for service ID : " + service.getId()
+					+ " Not Available in system. Try Again After adding the Price in DB");
 		}
+
 		return quote;
 	}
 
@@ -136,4 +124,23 @@ public class CatalogServiceImpl implements CatalogService {
 		return service;
 	}
 
+	/*
+	 * String baseUrl = loadBalancerClient.choose("ucppricing").getUri().toString()
+	 * + "/pricing/fetch/" + service.getId(); restTemplate = new RestTemplate();
+	 * ResponseEntity<Pricing> response = null;
+	 *
+	 * try { UriComponentsBuilder builder =
+	 * UriComponentsBuilder.fromUriString(baseUrl); response =
+	 * restTemplate.exchange(builder.buildAndExpand().toUri(), HttpMethod.GET, null,
+	 * Pricing.class);
+	 *
+	 * if (null != response.getBody()) { Pricing pricing = response.getBody();
+	 * quote.setPrice(pricing.getPrice()); quote.setDiscount(pricing.getDiscount());
+	 * quote.setQuoteOnInspection(pricing.isOnInspection()); } else { throw new
+	 * UCPException("ucp.service.catalog.003", "Pricing for service ID : " +
+	 * service.getId() +
+	 * " Not Available in system. Try Again After adding the Price in DB"); } }
+	 * catch (Exception ex) { throw new UCPException("ucp.service.catalog.004",
+	 * "Unable to fetch Pricing for service ID : " + service.getId()); }
+	 */
 }

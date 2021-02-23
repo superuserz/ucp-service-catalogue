@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.nagp.ucp.service.catalog.domain.Rating;
 
-@FeignClient("${NGM_RATING_SERVICE_URL:http://ucprating}")
+@FeignClient("${UCP_RATING_SERVICE_URL:http://ucprating}")
 public interface RatingClient {
 
 	@RequestMapping(method = RequestMethod.GET, value = "/rating/{serviceId}")
