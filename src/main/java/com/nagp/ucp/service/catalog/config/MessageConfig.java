@@ -5,6 +5,7 @@ import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.QueueBuilder;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
@@ -21,7 +22,8 @@ public class MessageConfig {
 
 	@Bean
 	public Queue queue() {
-		return new Queue(QueueConstants.QUEUE);
+		return QueueBuilder.durable(QueueConstants.QUEUE).build();
+
 	}
 
 	@Bean
@@ -43,6 +45,7 @@ public class MessageConfig {
 	public AmqpTemplate template(ConnectionFactory connectionFactory) {
 		final RabbitTemplate template = new RabbitTemplate(connectionFactory);
 		template.setMessageConverter(converter());
+		template.convertAndSend(QueueConstants.QUEUE_CREATION_SIGNAL);
 		return template;
 	}
 
