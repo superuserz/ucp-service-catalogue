@@ -43,32 +43,32 @@ public class CatalogController {
 
 	@GetMapping(value = "/fetch")
 	@ApiOperation(value = "Gets the Complete List of Catalog/Services Available to Users")
-	public List<Service> getCatalog() throws UCPException {
-		return catalogService.fetchCatalog();
+	public BaseResponse<List<Service>> getCatalog() throws UCPException {
+		return new BaseResponse<>(catalogService.fetchCatalog());
 	}
 
 	@GetMapping(value = "/fetch/{id}")
 	@ApiOperation(value = "Gets Details of a Service by its Service ID")
-	public Service getCatalogById(@PathVariable int id) throws UCPException {
-		return catalogService.fetchCatalogById(id);
+	public BaseResponse<Service> getCatalogById(@PathVariable int id) throws UCPException {
+		return new BaseResponse<>(catalogService.fetchCatalogById(id));
 	}
 
 	@GetMapping(value = "/fetch/pincode/{pincode}")
 	@ApiOperation(value = "Gets the Complete List of Catalog/Services Available to Users on the Basic of their Pincode")
-	public List<Service> getCatalogByPincode(@PathVariable int pincode) throws UCPException {
-		return catalogService.fetchCatalogByPincode(pincode);
+	public BaseResponse<List<Service>> getCatalogByPincode(@PathVariable int pincode) throws UCPException {
+		return new BaseResponse<>(catalogService.fetchCatalogByPincode(pincode));
 	}
 
 	@GetMapping(value = "/fetch/{id}/pricing")
 	@ApiOperation(value = "Gets the Pricing info of a Service on the Basis of its service ID")
-	public QuotedService getServicePricing(@PathVariable int id) throws UCPException {
-		return catalogService.fetchServicePricing(id);
+	public BaseResponse<QuotedService> getServicePricing(@PathVariable int id) throws UCPException {
+		return new BaseResponse<>(catalogService.fetchServicePricing(id));
 	}
 
 	@GetMapping(value = "/fetch/{id}/rating")
 	@ApiOperation(value = "Gets the Ratings List for a Service on the Basic of Service ID")
-	public List<Rating> getServiceRating(@PathVariable int id) throws UCPException {
-		return catalogService.fetchServiceRating(id);
+	public BaseResponse<List<Rating>> getServiceRating(@PathVariable int id) throws UCPException {
+		return new BaseResponse<>(catalogService.fetchServiceRating(id));
 	}
 
 	@PostMapping(value = "/rating")

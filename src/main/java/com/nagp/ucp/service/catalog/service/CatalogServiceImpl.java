@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
 
 import com.nagp.ucp.common.exception.UCPException;
+import com.nagp.ucp.common.responses.BaseResponse;
 import com.nagp.ucp.service.catalog.client.PricingClient;
 import com.nagp.ucp.service.catalog.client.RatingClient;
 import com.nagp.ucp.service.catalog.domain.Pricing;
@@ -91,7 +92,12 @@ public class CatalogServiceImpl implements CatalogService {
 		quote.setDescription(service.getDescription());
 
 		// Fetch Pricing from Pricing Service.
-		Pricing pricing = pricingClient.getPricing(id);
+		BaseResponse<Pricing> response = null;
+		Pricing pricing = null;
+		response = pricingClient.getPricing(id);
+		if (response != null) {
+			pricing = response.getData();
+		}
 		if (null != pricing) {
 			quote.setPrice(pricing.getPrice());
 			quote.setDiscount(pricing.getDiscount());
@@ -106,7 +112,12 @@ public class CatalogServiceImpl implements CatalogService {
 
 	@Override
 	public List<Rating> fetchServiceRating(int id) throws UCPException {
-		List<Rating> ratings = ratingClient.getRatings(id);
+		BaseResponse<List<Rating>> response = null;
+		List<Rating> ratings = new ArrayList<>();
+		response = ratingClient.getRatings(id);
+		if (response != null) {
+			ratings = response.getData();
+		}
 		if (null == ratings || ratings.isEmpty()) {
 			throw new UCPException("ucp.service.catalog.006", "No Ratings Available for the Service Id : " + id);
 		}
