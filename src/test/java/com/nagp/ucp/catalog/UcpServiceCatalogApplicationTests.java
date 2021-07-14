@@ -1,10 +1,10 @@
-package com.nagp.ucp;
+package com.nagp.ucp.catalog;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class UcpServiceNotificationApplicationTests {
+class UcpServiceCatalogApplicationTests{
 
 	@Test
 	void contextLoads() {
