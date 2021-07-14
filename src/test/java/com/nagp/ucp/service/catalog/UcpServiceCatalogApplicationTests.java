@@ -1,9 +1,9 @@
-package com.nagp.ucp.catalog;
+package com.nagp.ucp.service.catalog;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
+@SpringBootTest(classes = UcpServiceCatalogApplicationTests.class)
 class UcpServiceCatalogApplicationTests{
 
 	@Test
